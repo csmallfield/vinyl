@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}Vinyl{% endblock %}</title>
+
+  <!-- No build step: Tailwind via CDN (fine for personal app, swap for built CSS if you ever deploy publicly at scale) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- htmx -->
+ <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
+
+  <!-- Alpine.js for tiny client interactions (modal open/close) -->
+  <script defer src="https://unpkg.com/htmx.org@2.0.4/dist/cdn.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/app.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#f5f0e6',
+            ink:   '#1a1814',
+            accent:'#a4361b',
+            muted: '#6b6557',
+            line:  '#d6cfbe'
+          },
+          fontFamily: {
+            display: ['"DM Serif Display"', 'serif'],
+            sans:    ['"Work Sans"', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-paper text-ink font-sans min-h-screen flex flex-col">
+
+  <header class="border-b border-line bg-paper sticky top-0 z-30">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-baseline justify-between">
+      <a href="/search" class="font-display text-2xl tracking-tight text-ink">Vinyl</a>
+      <nav class="flex items-center gap-1 text-sm">
+        {% set tabs = [('search','Search'),('library','Library'),('wishlist','Wishlist')] %}
+        {% for slug, label in tabs %}
+          <a href="/{{ slug }}"
+             class="px-3 py-1.5 rounded-full transition
+                    {% if active == slug %}bg-ink text-paper{% else %}text-muted hover:text-ink{% endif %}">
+            {{ label }}
+          </a>
+        {% endfor %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t border-line text-center text-xs text-muted py-3">
+    metadata via discogs · stored locally
+  </footer>
+
+  <!-- Detail modal target (filled by htmx) -->
+  <div id="modal-root"></div>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+{# Album-cover grid view for library and wishlist. #}
+{% if not items %}
+  <p class="text-muted text-sm">Nothing here yet.</p>
+{% else %}
+  <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+    {% for item in items %}
+      <button type="button"
+              hx-get="/detail/{{ item.master_id }}"
+              hx-target="#modal-root"
+              hx-swap="innerHTML"
+              class="group aspect-square bg-line overflow-hidden relative">
+        {% if item.cover_url or item.thumb_url %}
+          <img src="{{ item.cover_url or item.thumb_url }}" alt="{{ item.title }}"
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+               loading="lazy">
+        {% endif %}
+        <div class="absolute inset-0 bg-gradient-to-t from-ink/80 to-transparent
+                    opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+          <div class="text-paper text-left text-xs">
+            <div class="opacity-70 truncate">{{ item.artist }}</div>
+            <div class="font-medium truncate">{{ item.title }}</div>
+          </div>
+        </div>
+      </button>
+    {% endfor %}
+  </div>
+{% endif %}

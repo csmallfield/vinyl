@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Library · Vinyl{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-4">
+  <h1 class="font-display text-3xl">Library</h1>
+  <div class="flex gap-1 text-xs">
+    <a href="/library?view=list"
+       class="px-3 py-1.5 rounded-full {% if view == 'list' %}bg-ink text-paper{% else %}text-muted hover:text-ink{% endif %}">list</a>
+    <a href="/library?view=grid"
+       class="px-3 py-1.5 rounded-full {% if view == 'grid' %}bg-ink text-paper{% else %}text-muted hover:text-ink{% endif %}">grid</a>
+  </div>
+</div>
+
+{% if view == 'grid' %}
+  {% include "_result_grid.html" %}
+{% else %}
+  {% with empty_msg = "Your library is empty. Find albums in Search to add them." %}
+    {% include "_result_list.html" %}
+  {% endwith %}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,118 @@
+{# Bottom-sheet style detail panel. Alpine handles open/close. #}
+<div x-data
+     class="fixed inset-0 z-40">
+
+  <!-- backdrop -->
+  <div @click="$root.remove()"
+       class="absolute inset-0 bg-ink/50 backdrop-blur-sm"></div>
+
+  <!-- sheet -->
+  <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center"
+       x-transition:enter="transition transform duration-300"
+       x-transition:enter-start="translate-y-full sm:translate-y-0 sm:opacity-0"
+       x-transition:enter-end="translate-y-0 sm:opacity-100">
+
+    <div class="bg-paper sm:rounded-lg shadow-2xl sm:max-w-lg w-full
+                max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden">
+
+      <!-- header -->
+      <div class="flex items-start gap-4 p-5 border-b border-line">
+        {% if d.cover_url %}
+          <img src="{{ d.cover_url }}" alt=""
+               class="w-32 h-32 object-cover bg-line shrink-0">
+        {% else %}
+          <div class="w-32 h-32 bg-line shrink-0"></div>
+        {% endif %}
+        <div class="flex-1 min-w-0">
+          <div class="text-sm text-muted">{{ d.artist or "—" }}</div>
+          <h2 class="font-display text-2xl leading-tight mt-0.5">{{ d.title }}</h2>
+          <div class="text-xs text-muted mt-2">
+            {{ d.year or "" }}
+            {% if d.genres %} · {{ d.genres | join(", ") }}{% endif %}
+          </div>
+          {% if existing_status %}
+            <div class="text-xs text-accent mt-2">
+              {% if existing_status == 'library' %}in your library{% else %}on your wishlist{% endif %}
+            </div>
+          {% endif %}
+        </div>
+        <button @click="$root.remove()"
+                class="text-muted hover:text-ink text-xl leading-none px-2"
+                aria-label="close">×</button>
+      </div>
+
+      <!-- scrollable body -->
+      <div class="flex-1 overflow-y-auto p-5">
+        {% if d.tracklist %}
+          <h3 class="text-xs uppercase tracking-wider text-muted mb-2">Tracklist</h3>
+          <ol class="space-y-1 text-sm">
+            {% for t in d.tracklist %}
+              <li class="flex gap-3">
+                <span class="text-muted w-8 shrink-0">{{ t.position }}</span>
+                <span class="flex-1">{{ t.title }}</span>
+                <span class="text-muted text-xs tabular-nums">{{ t.duration }}</span>
+              </li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <p class="text-muted text-sm">No tracklist available.</p>
+        {% endif %}
+
+        {% if d.notes %}
+          <h3 class="text-xs uppercase tracking-wider text-muted mb-2 mt-6">Notes</h3>
+          <p class="text-sm whitespace-pre-line">{{ d.notes }}</p>
+        {% endif %}
+      </div>
+
+      <!-- actions -->
+      <div class="p-4 border-t border-line bg-paper grid grid-cols-2 gap-2">
+        {% if existing_status == 'library' %}
+          <form hx-post="/items/{{ d.master_id }}/move" class="contents">
+            <input type="hidden" name="status" value="wishlist">
+            <button class="bg-paper border border-ink text-ink rounded-md py-2.5 text-sm font-medium hover:bg-line">
+              move to wishlist
+            </button>
+          </form>
+          <form hx-post="/items/{{ d.master_id }}/delete" class="contents">
+            <input type="hidden" name="redirect_to" value="library">
+            <button class="bg-accent text-paper rounded-md py-2.5 text-sm font-medium hover:opacity-90">
+              remove from library
+            </button>
+          </form>
+        {% elif existing_status == 'wishlist' %}
+          <form hx-post="/items/{{ d.master_id }}/move" class="contents">
+            <input type="hidden" name="status" value="library">
+            <button class="bg-ink text-paper rounded-md py-2.5 text-sm font-medium hover:bg-accent">
+              add to library
+            </button>
+          </form>
+          <form hx-post="/items/{{ d.master_id }}/delete" class="contents">
+            <input type="hidden" name="redirect_to" value="wishlist">
+            <button class="bg-accent text-paper rounded-md py-2.5 text-sm font-medium hover:opacity-90">
+              remove from wishlist
+            </button>
+          </form>
+        {% else %}
+          <form hx-post="/items/{{ d.master_id }}/add"
+                hx-target="#modal-root"
+                hx-swap="innerHTML"
+                class="contents">
+            <input type="hidden" name="status" value="library">
+            <button class="bg-ink text-paper rounded-md py-2.5 text-sm font-medium hover:bg-accent">
+              add to library
+            </button>
+          </form>
+          <form hx-post="/items/{{ d.master_id }}/add"
+                hx-target="#modal-root"
+                hx-swap="innerHTML"
+                class="contents">
+            <input type="hidden" name="status" value="wishlist">
+            <button class="bg-paper border border-ink text-ink rounded-md py-2.5 text-sm font-medium hover:bg-line">
+              add to wishlist
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

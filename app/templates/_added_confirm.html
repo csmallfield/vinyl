@@ -1,0 +1,11 @@
+{# Replaces the modal contents after a successful add. #}
+<div x-data="{ show: true }"
+     x-show="show"
+     x-init="setTimeout(() => { show = false; setTimeout(() => $el.remove(), 300) }, 1500)"
+     x-transition.opacity
+     class="fixed inset-0 z-40 flex items-center justify-center pointer-events-none"
+     style="display:none">
+  <div class="bg-ink text-paper px-6 py-4 rounded-lg shadow-2xl text-sm">
+    added to {{ status }}
+  </div>
+</div>

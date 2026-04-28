@@ -1,0 +1,9 @@
+/* Small overrides not easily done in Tailwind. */
+
+/* htmx loading indicator default behaviour */
+.htmx-indicator { opacity: 0; transition: opacity 200ms ease; }
+.htmx-request .htmx-indicator { opacity: 1; }
+.htmx-request.htmx-indicator { opacity: 1; }
+
+/* Tabular numbers in tracklist durations */
+.tabular-nums { font-variant-numeric: tabular-nums; }

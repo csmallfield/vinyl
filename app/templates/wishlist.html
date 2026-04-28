@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Wishlist · Vinyl{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-4">
+  <h1 class="font-display text-3xl">Wishlist</h1>
+  <div class="flex gap-1 text-xs">
+    <a href="/wishlist?view=list"
+       class="px-3 py-1.5 rounded-full {% if view == 'list' %}bg-ink text-paper{% else %}text-muted hover:text-ink{% endif %}">list</a>
+    <a href="/wishlist?view=grid"
+       class="px-3 py-1.5 rounded-full {% if view == 'grid' %}bg-ink text-paper{% else %}text-muted hover:text-ink{% endif %}">grid</a>
+  </div>
+</div>
+
+{% if view == 'grid' %}
+  {% include "_result_grid.html" %}
+{% else %}
+  {% with empty_msg = "Your wishlist is empty." %}
+    {% include "_result_list.html" %}
+  {% endwith %}
+{% endif %}
+
+{% endblock %}

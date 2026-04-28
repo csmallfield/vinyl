@@ -1,0 +1,32 @@
+{# Renders a list of items as rows. Used by search results, library list, wishlist list. #}
+{% if not items %}
+  <p class="text-muted text-sm">{{ empty_msg or "Nothing here." }}</p>
+{% else %}
+  <ul class="divide-y divide-line">
+    {% for item in items %}
+      <li>
+        <button type="button"
+                hx-get="/detail/{{ item.master_id }}"
+                hx-target="#modal-root"
+                hx-swap="innerHTML"
+                class="w-full flex items-center gap-3 py-3 text-left hover:bg-line/30 -mx-2 px-2 rounded transition">
+          {% if item.thumb_url %}
+            <img src="{{ item.thumb_url }}" alt=""
+                 class="w-16 h-16 object-cover bg-line shrink-0" loading="lazy">
+          {% else %}
+            <div class="w-16 h-16 bg-line shrink-0"></div>
+          {% endif %}
+          <div class="flex-1 min-w-0">
+            <div class="text-sm text-muted truncate">{{ item.artist or "—" }}</div>
+            <div class="font-medium truncate">{{ item.title }}</div>
+            <div class="text-xs text-muted mt-0.5">
+              {{ item.year or "" }}
+              {% if item.status == 'library' %}<span class="ml-2 text-accent">· in library</span>{% endif %}
+              {% if item.status == 'wishlist' %}<span class="ml-2 text-accent">· on wishlist</span>{% endif %}
+            </div>
+          </div>
+        </button>
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
