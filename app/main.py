@@ -9,8 +9,10 @@ from fastapi import FastAPI, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
 
 from . import db, discogs
+from .auth import AuthMiddleware, password_matches, SESSION_MAX_AGE
 from .config import settings
 from .models import DisplayItem
 
@@ -25,6 +27,18 @@ settings.validate()
 db.init_db()
 
 app = FastAPI(title="Vinyl")
+
+# Order matters: the LAST added middleware is OUTERMOST.
+# We need SessionMiddleware to be outer so request.session exists by the
+# time AuthMiddleware runs.
+app.add_middleware(AuthMiddleware)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.SESSION_SECRET,
+    max_age=SESSION_MAX_AGE,
+    https_only=settings.COOKIE_SECURE,
+    same_site="lax",
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -65,6 +79,31 @@ def _search_result_to_display_item(r: dict, status: Optional[str]) -> DisplayIte
         thumb_url=r.get("thumb") or r.get("cover_image"),
         status=status,
     )
+
+
+# ---------- auth ----------
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request, error: int = 0):
+    return templates.TemplateResponse(
+        request,
+        "login.html",
+        {"error": bool(error)},
+    )
+
+
+@app.post("/login")
+async def login_submit(request: Request, password: str = Form(...)):
+    if not password_matches(password):
+        return RedirectResponse("/login?error=1", status_code=303)
+    request.session["authed"] = True
+    return RedirectResponse("/search", status_code=303)
+
+
+@app.post("/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse("/login", status_code=303)
 
 
 # ---------- pages ----------

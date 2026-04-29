@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sign in · Vinyl</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css">
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { paper:'#f5f0e6', ink:'#1a1814', accent:'#a4361b', muted:'#6b6557', line:'#d6cfbe' },
+        fontFamily: { display:['"DM Serif Display"','serif'], sans:['"Work Sans"','system-ui','sans-serif'] }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-paper text-ink font-sans min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-sm">
+    <h1 class="font-display text-4xl text-center mb-2">Vinyl</h1>
+    <p class="text-center text-muted text-sm mb-8">enter the password to continue</p>
+
+    <form method="post" action="/login" class="space-y-3">
+      <input type="password" name="password" required autofocus
+             placeholder="password"
+             class="w-full bg-paper border border-line rounded-md px-3 py-2.5 text-ink
+                    placeholder:text-muted focus:outline-none focus:border-ink">
+      <button type="submit"
+              class="w-full bg-ink text-paper rounded-md py-2.5 text-sm font-medium hover:bg-accent transition">
+        sign in
+      </button>
+      {% if error %}
+        <p class="text-accent text-sm text-center">wrong password.</p>
+      {% endif %}
+    </form>
+  </div>
+</body>
+</html>

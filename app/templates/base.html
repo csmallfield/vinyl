@@ -62,7 +62,10 @@
   </main>
 
   <footer class="border-t border-line text-center text-xs text-muted py-3">
-    metadata via discogs · stored locally
+    metadata via discogs · stored locally ·
+    <form method="post" action="/logout" class="inline">
+      <button type="submit" class="hover:text-ink underline-offset-2 hover:underline">logout</button>
+    </form>
   </footer>
 
   <!-- Detail modal target (filled by htmx) -->
